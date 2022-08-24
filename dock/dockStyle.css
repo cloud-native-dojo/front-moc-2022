@@ -79,3 +79,12 @@
 .container-box {
   font-size: 30px;
 }
+
+#pika-box {
+  transition: background-color 1s;
+}
+
+#pika-box.highlight {
+  background-color: #FF3333;
+  transition-duration: 0s;
+}
