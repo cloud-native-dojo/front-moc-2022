@@ -6,7 +6,7 @@ var ShipNum;
 var IslandNum;
 
 btn.addEventListener('click', function () {
-  window.location.href = 'https://cloud-native-dojo.github.io/front-moc-2022/earth/earth.html';
+  window.location.href = 'http://10.204.227.162/earth/earth.html';
 }, false);
 
 function onDragStart(event) {
@@ -58,8 +58,8 @@ function onDragEnd(event) {
 }
 
 async function moveNewPage() {
-  var url = "https://cloud-native-dojo.github.io/front-moc-2022/earth/earth.html"
-  makepod('http://127.0.0.1:8000/pods/',
+  var url = "http://10.204.227.162/earth/earth.html"
+  makepod('http://10.204.227.162:8000/pods/',
     {
       "containers": {
         "wordpress": 1
@@ -74,7 +74,7 @@ async function moveNewPage() {
 
 //Podのデータを取得する関数
 async function getPodData() {
-  let response = await fetch("http://127.0.0.1:8000/pods/");
+  let response = await fetch("http://10.204.227.162:8000/pods/");
 
   if (response.ok) {
     let json = await response.json();
