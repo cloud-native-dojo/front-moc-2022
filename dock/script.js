@@ -1,4 +1,4 @@
-let dragged = null;
+  let dragged = null;
 
 var btn = document.getElementById("btn");
 

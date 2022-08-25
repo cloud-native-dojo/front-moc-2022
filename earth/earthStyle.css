@@ -116,6 +116,7 @@
   z-index: 1000;
   top: 32%;
   left: 46%;
+  width: 170px;
 }
 
 .drag {
@@ -130,7 +131,7 @@
   text-align: center;
   position: fixed;
   top: 0;
-  right:0;
+  right: 0;
   z-index: 999;
 }
 
@@ -140,6 +141,25 @@
   left: 0;
   margin: 5px;
   border: 5px solid black;
+  animation: blinkEffect 1s ease infinite;
+}
+
+@keyframes blinkEffect {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+
+.confirm {
+  position: fixed;
+  bottom: 20%;
+  right: 0;
+  background-color: greenyellow;
 }
 
 .delete_ship {

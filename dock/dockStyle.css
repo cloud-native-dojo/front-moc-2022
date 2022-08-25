@@ -88,3 +88,19 @@
   background-color: #FF3333;
   transition-duration: 0s;
 }
+
+#animated {
+
+  animation: move-y .5s infinite alternate ease-in-out;
+  display: inline-block;
+}
+
+@keyframes move-y {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(20px);
+  }
+}

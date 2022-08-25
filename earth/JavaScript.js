@@ -49,11 +49,24 @@ const cyrb53 = function (str, seed = 0) {
 
         let bgcode = cyrb53(pods[i]);
 
-        bgcode = "#" + String(bgcode).slice(3,9);
+        bgcode = "#" + String(bgcode).slice(3, 9);
 
         console.log(bgcode);
 
-        ship.innerHTML = "<div style='background:" + bgcode + ";'><img src=\"https://cdn-icons-png.flaticon.com/512/870/870056.png\" width=\"80\" height=\"80\"><div>";
+        // 指定した色からR/G/Bをそれぞれ取得
+        const red = parseInt(bgcode.substr(1, 2), 16);
+        const green = parseInt(bgcode.substr(3, 2), 16);
+        const blue = parseInt(bgcode.substr(5, 2), 16);
+
+        // 明るさの計算(0〜255)
+        const brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+        // 明るさの計算(0〜100)
+        const luminance = brightness / 2.55
+
+        // 基準値(50)より大きい場合は、黒を返し、それ以外は白を返す
+        let text_color =  luminance > 50 ? "#000000" : "#ffffff";
+        console.log(text_color);
+        ship.innerHTML = "<div style='background:" + bgcode + ";'><img src=\"https://cdn-icons-png.flaticon.com/512/870/870056.png\" width=\"80\" height=\"80\"><p style='color:" + text_color + ";font-weight: bold;'>" + pods[i] +"</p><div>";
 
         ship_element.appendChild(ship);
       }
@@ -62,7 +75,6 @@ const cyrb53 = function (str, seed = 0) {
     alert("HTTP-Error: " + response.status);
   }
 
-  console.log(ship_rect);
 
   let get_ports = await fetch("http://10.204.227.162:8000/ports_suggest/");
 
@@ -165,21 +177,25 @@ const cyrb53 = function (str, seed = 0) {
     }
 
     //ムーブベントハンドラの消去
-    document.body.removeEventListener("mousemove", mmove, false);
-    drag.removeEventListener("mouseup", mup, false);
-    document.body.removeEventListener("touchmove", mmove, false);
-    drag.removeEventListener("touchend", mup, false);
+    try {
+      document.body.removeEventListener("mousemove", mmove, false);
+      drag.removeEventListener("mouseup", mup, false);
+      document.body.removeEventListener("touchmove", mmove, false);
+      drag.removeEventListener("touchend", mup, false);
+    } catch (e) { }
 
     for (let i = 0; i < elements.length; i++) {
       ship_rect[i] = elements[i].getBoundingClientRect();
     }
 
-    check_island();
+    //check_island();
 
     save();
 
     //クラス名 .drag も消す
-    drag.classList.remove("drag");
+    try {
+      drag.classList.remove("drag");
+    } catch (e) { }
   }
 
 })()
@@ -194,6 +210,9 @@ function check_island() {
 
   for (let j = 0; j < island_rect.length; j++) {
     for (let i = 0; i < elements.length; i++) {
+
+      console.log(delete_box.top);
+      console.log(delete_box.right);
       if (detectCollision(ship_rect[i], delete_box)) {
         console.log(elements[i].id);
         deleteShip(elements[i].id);
@@ -227,6 +246,18 @@ function check_island() {
       } else {
         island[j][0].style.backgroundColor = '#CCCCCC';
         island[j][0].classList.remove("bind");
+      }
+      if (ship_rect[i].top > document.documentElement.clientHeight) {
+        elements[i].style.top = "0px";
+      }
+      if (ship_rect[i].top < 0) {
+        elements[i].style.top = "0px";
+      }
+      if (ship_rect[i].left > document.documentElement.clientWidth) {
+        elements[i].style.left = "0px";
+      }
+      if (ship_rect[i].left < 0) {
+        elements[i].style.left = "0px";
       }
     }
   }
@@ -315,9 +346,9 @@ function deleteIsland() {
 
 function deleteShip(ShipName) {
   delete_data('http://10.204.227.162:8000/pods/',
-  {
-    "name":ShipName
-  })
+    {
+      "name": ShipName
+    })
     .then(data => {
       console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
     });
@@ -380,6 +411,6 @@ window.addEventListener('load', function () {
       box.classList.remove('highlight');
     }, 50);
 
-    console.log("hi")
+    console.log(i)
   }
 });
