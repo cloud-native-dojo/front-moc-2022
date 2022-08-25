@@ -21,21 +21,13 @@ for (var i = 0; i < island.length; i++) {
   all_ports[i].style.visibility = "hidden";
 }
 
-const cyrb53 = function (str, seed = 0) {
-  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-  for (let i = 0, ch; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-};
+var onisland1 = 0;
+var onisland2 = 0;
+var onisland3 = 0;
+var onisland4 = 0;
 
 (async function () {
-  let response = await fetch("http://10.204.227.162:8000/pods/");
-
+  let response = await fetch("http://127.0.0.1:8000/pods/");
 
   if (response.ok) {
     let pods = (await response.json()).pods;
@@ -52,6 +44,13 @@ const cyrb53 = function (str, seed = 0) {
         bgcode = "#" + String(bgcode).slice(3, 9);
 
         console.log(bgcode);
+	/*
+        let bgcode = (await sha256(pods[i]))
+
+        bgcode = "#" + bgcode.slice(0, 6);
+
+        console.log(bgcode)
+	*/
 
         // 指定した色からR/G/Bをそれぞれ取得
         const red = parseInt(bgcode.substr(1, 2), 16);
