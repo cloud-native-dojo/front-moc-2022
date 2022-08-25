@@ -5,6 +5,21 @@ var btn = document.getElementById("btn");
 var ShipNum;
 var IslandNum;
 
+//光らせる
+window.addEventListener('load', function () {
+  for (let i = 0; i < 10; i++) {
+    var box = document.querySelector('#pika-box');
+    box.classList.add('highlight');
+
+
+    setTimeout(function () {
+      box.classList.remove('highlight');
+    }, 50);
+
+    console.log("hi")
+  }
+});
+
 btn.addEventListener('click', function () {
   window.location.href = 'http://10.204.227.162/earth/earth.html';
 }, false);
@@ -103,17 +118,3 @@ async function makepod(url = '', data = {}) {
   })
   return response.json(); // JSON のレスポンスをネイティブの JavaScript オブジェクトに解釈
 }
-
-window.addEventListener('load', function () {
-  for (let i = 0; i < 10; i++) {
-    var box = document.querySelector('#pika-box');
-    box.classList.add('highlight');
-
-
-    setTimeout(function () {
-      box.classList.remove('highlight');
-    }, 50);
-
-    console.log("hi")
-  }
-});

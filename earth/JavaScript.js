@@ -47,15 +47,13 @@ const cyrb53 = function (str, seed = 0) {
         ship.className = "ship";
         ship.id = pods[i];
 
-<<<<<<< HEAD
         let bgcode = cyrb53(pods[i]);
-=======
+
         let bgcode = (await sha256(pods[i]))
 
         bgcode = "#" + bgcode.slice(0, 6);
->>>>>>> dcafaa2d4722f4775e93d011f093bdfe65d47249
 
-        bgcode = "#" + String(bgcode).slice(3,9);
+        bgcode = "#" + String(bgcode).slice(3, 9);
 
         console.log(bgcode);
 
@@ -320,17 +318,14 @@ function deleteIsland() {
 }
 
 function deleteShip(ShipName) {
-<<<<<<< HEAD
   delete_data('http://10.204.227.162:8000/pods/',
-  {
-    "name":ShipName
-  })
-=======
+    {
+      "name": ShipName
+    })
   delete_data('http://127.0.0.1:8000/pods/',
     {
       "name": ShipName
     })
->>>>>>> dcafaa2d4722f4775e93d011f093bdfe65d47249
     .then(data => {
       console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
     });
