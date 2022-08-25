@@ -21,13 +21,21 @@ for(var i=0;i < island.length;i++){
   all_ports[i].style.visibility = "hidden";
 }
 
-var onisland1 = 0;
-var onisland2 = 0;
-var onisland3 = 0;
-var onisland4 = 0;
+const cyrb53 = function (str, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+};
 
 (async function () {
-  let response = await fetch("http://127.0.0.1:8000/pods/");
+  let response = await fetch("http://10.204.227.162:8000/pods/");
+
 
   if (response.ok) {
     let pods = (await response.json()).pods;
@@ -39,11 +47,11 @@ var onisland4 = 0;
         ship.className = "ship";
         ship.id = pods[i];
 
-        let bgcode = (await sha256(pods[i]))
-        
-        bgcode = "#" + bgcode.slice(0,6);
+        let bgcode = cyrb53(pods[i]);
 
-        console.log(bgcode)
+        bgcode = "#" + String(bgcode).slice(3,9);
+
+        console.log(bgcode);
 
         ship.innerHTML = "<div style='background:" + bgcode + ";'><img src=\"https://cdn-icons-png.flaticon.com/512/870/870056.png\" width=\"80\" height=\"80\"><div>";
 
@@ -56,7 +64,7 @@ var onisland4 = 0;
 
   console.log(ship_rect);
 
-  let get_ports = await fetch("http://127.0.0.1:8000/ports_suggest/");
+  let get_ports = await fetch("http://10.204.227.162:8000/ports_suggest/");
 
   if (get_ports.ok) {
     let ports = (await get_ports.json()).sugessted_port;
@@ -68,7 +76,7 @@ var onisland4 = 0;
     alert("HTTP-Error: " + response.status);
   }
 
-  let get_save = await fetch("http://127.0.0.1:8000/save/");
+  let get_save = await fetch("http://10.204.227.162:8000/save/");
 
   if (get_save.ok) {
     let save_data = (await get_save.json()).data;
@@ -200,9 +208,10 @@ function check_island() {
         elements[i].style.left = island_rect[j].left + (island_rect[j].right - island_rect[j].left) / 4 + 20 + "px";
         island[j][0].style.backgroundColor = '#33FF00';
 
-        post_data('http://127.0.0.1:8000/services/',
+        post_data('http://10.204.227.162:8000/services/',
           {
-            "port": all_ports[j].innerText,
+            // "port": all_ports[j].innerText,
+            "port": parseInt(all_ports[j].innerText.replace("port:", ""), 10),
             "name": elements[i].id
           }
         )
@@ -212,8 +221,8 @@ function check_island() {
 
         let link = document.getElementById('island' + (j + 1) + '_link');
         console.log(link)
-        let url = 'http://10.204.227.151:' + all_ports[j].innerText;
-        link.setAttribute('href', url);
+        let url = 'http://10.204.227.162:' + all_ports[j].innerText;
+        link.setAttribute('href', url.replace(":port", ""));
         island[j][0].classList.add("bind");
         break;
       } else {
@@ -244,7 +253,7 @@ function save() {
   for (let i = 0; i < elements.length; i++) {
     save_message.ship[elements[i].id] = ship_rect[i].top + " " + ship_rect[i].left;
   }
-  post_data('http://127.0.0.1:8000/save/', save_message
+  post_data('http://10.204.227.162:8000/save/', save_message
   )
     .then(data => {
       console.log(data.data); // `data.json()` の呼び出しで解釈された JSON データ
@@ -275,7 +284,7 @@ function GetQueryString() {
 
 
 function moveNewPage() {
-  var nextUrl = "https://cloud-native-dojo.github.io/front-moc-2022/dock/dock.html"
+  var nextUrl = "http://10.204.227.162/dock/dock.html"
 
   window.location.href = nextUrl;
 }
@@ -306,7 +315,7 @@ function deleteIsland() {
 }
 
 function deleteShip(ShipName) {
-  delete_data('http://127.0.0.1:8000/pods/',
+  delete_data('http://10.204.227.162:8000/pods/',
   {
     "name":ShipName
   })
@@ -352,10 +361,4 @@ async function delete_data(url = '', data = {}) {
     body: JSON.stringify(data) // 本文のデータ型は "Content-Type" ヘッダーと一致させる必要があります
   })
   return response.json(); // JSON のレスポンスをネイティブの JavaScript オブジェクトに解釈
-}
-
-async function sha256(text) {
-  const uint8 = new TextEncoder().encode(text)
-  const digest = await crypto.subtle.digest('SHA-256', uint8)
-  return Array.from(new Uint8Array(digest)).map(v => v.toString(16).padStart(2, '0')).join('')
 }
