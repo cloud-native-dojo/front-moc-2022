@@ -124,10 +124,14 @@
 }
 
 .message {
-  font-size: 50px;
+  font-size: 1.8rem;
   margin-top: 0px;
   margin-bottom: 0px;
   text-align: center;
+  position: fixed;
+  top: 0;
+  right:0;
+  z-index: 999;
 }
 
 .add_ship_btn {
