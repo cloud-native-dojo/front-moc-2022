@@ -1,22 +1,22 @@
 var elements = document.getElementsByClassName("ship");
 var island = [document.getElementsByClassName("island1"),
-              document.getElementsByClassName("island2"),
-              document.getElementsByClassName("island3"),
-              document.getElementsByClassName("island4")];
+document.getElementsByClassName("island2"),
+document.getElementsByClassName("island3"),
+document.getElementsByClassName("island4")];
 var island_rect = [island[0][0].getBoundingClientRect(),
-                    island[1][0].getBoundingClientRect(),
-                    island[2][0].getBoundingClientRect(),
-                    island[3][0].getBoundingClientRect()];
+island[1][0].getBoundingClientRect(),
+island[2][0].getBoundingClientRect(),
+island[3][0].getBoundingClientRect()];
 var all_ports = [document.getElementById("island1_port"),
-              document.getElementById("island2_port"),
-              document.getElementById("island3_port"),
-              document.getElementById("island4_port")]
+document.getElementById("island2_port"),
+document.getElementById("island3_port"),
+document.getElementById("island4_port")]
 var ship_box = document.getElementById("ship_box").getBoundingClientRect();
 var delete_box = document.getElementsByClassName("delete_ship")[0].getBoundingClientRect();
 
 var ship_rect = [];
 
-for(var i=0;i < island.length;i++){
+for (var i = 0; i < island.length; i++) {
   island[i][0].style.visibility = "hidden";
   all_ports[i].style.visibility = "hidden";
 }
@@ -39,7 +39,7 @@ const cyrb53 = function (str, seed = 0) {
 
   if (response.ok) {
     let pods = (await response.json()).pods;
-    if (pods[0] != ""){
+    if (pods[0] != "") {
       console.log(pods);
       for (var i = 0; i < pods.length; i++) {
         var ship_element = document.getElementById('ships');
@@ -47,7 +47,13 @@ const cyrb53 = function (str, seed = 0) {
         ship.className = "ship";
         ship.id = pods[i];
 
+<<<<<<< HEAD
         let bgcode = cyrb53(pods[i]);
+=======
+        let bgcode = (await sha256(pods[i]))
+
+        bgcode = "#" + bgcode.slice(0, 6);
+>>>>>>> dcafaa2d4722f4775e93d011f093bdfe65d47249
 
         bgcode = "#" + String(bgcode).slice(3,9);
 
@@ -86,10 +92,10 @@ const cyrb53 = function (str, seed = 0) {
       all_ports[i].style.visibility = save_data.island[i];
     }
     for (let i = 0; i < elements.length; i++) {
-      try{
-      elements[i].style.top = save_data.ship[elements[i].id].split(" ")[0] + "px";
-      elements[i].style.left = save_data.ship[elements[i].id].split(" ")[1] + "px";
-      }catch(e){}
+      try {
+        elements[i].style.top = save_data.ship[elements[i].id].split(" ")[0] + "px";
+        elements[i].style.left = save_data.ship[elements[i].id].split(" ")[1] + "px";
+      } catch (e) { }
       ship_rect[i] = elements[i].getBoundingClientRect();
     }
   } else {
@@ -160,7 +166,7 @@ const cyrb53 = function (str, seed = 0) {
   function mup(e) {
     try {
       var drag = document.getElementsByClassName("drag")[0];
-    } catch(e){
+    } catch (e) {
 
     }
 
@@ -175,7 +181,7 @@ const cyrb53 = function (str, seed = 0) {
     }
 
     check_island();
-    
+
     save();
 
     //クラス名 .drag も消す
@@ -194,16 +200,15 @@ function check_island() {
 
   for (let j = 0; j < island_rect.length; j++) {
     for (let i = 0; i < elements.length; i++) {
-      if (detectCollision(ship_rect[i],delete_box)) {
+      if (detectCollision(ship_rect[i], delete_box)) {
         console.log(elements[i].id);
         deleteShip(elements[i].id);
         elements[i].remove();
       }
-      if (detectCollision(ship_box, ship_rect[i]) == false 
-        && detectCollision(island_rect[j], ship_rect[i]) 
-        && island[j][0].classList.contains("bind") == false 
-        && window.getComputedStyle(island[j][0]).visibility == "visible") 
-        {
+      if (detectCollision(ship_box, ship_rect[i]) == false
+        && detectCollision(island_rect[j], ship_rect[i])
+        && island[j][0].classList.contains("bind") == false
+        && window.getComputedStyle(island[j][0]).visibility == "visible") {
         elements[i].style.top = island_rect[j].top + (island_rect[j].bottom - island_rect[j].top) / 4 + "px";
         elements[i].style.left = island_rect[j].left + (island_rect[j].right - island_rect[j].left) / 4 + 20 + "px";
         island[j][0].style.backgroundColor = '#33FF00';
@@ -258,8 +263,8 @@ function save() {
     .then(data => {
       console.log(data.data); // `data.json()` の呼び出しで解釈された JSON データ
     }
-  );
-  
+    );
+
 }
 
 //urlのパラメーター取得
@@ -304,7 +309,7 @@ function addIsland() {
 
 function deleteIsland() {
   console.log("delete");
-  for (var i = island.length-1; i > -1; i--) {
+  for (var i = island.length - 1; i > -1; i--) {
     if (window.getComputedStyle(island[i][0]).visibility == "visible" && island[i][0].classList.contains("bind") == false) {
       island[i][0].style.visibility = "hidden";
       all_ports[i].style.visibility = "hidden";
@@ -315,10 +320,17 @@ function deleteIsland() {
 }
 
 function deleteShip(ShipName) {
+<<<<<<< HEAD
   delete_data('http://10.204.227.162:8000/pods/',
   {
     "name":ShipName
   })
+=======
+  delete_data('http://127.0.0.1:8000/pods/',
+    {
+      "name": ShipName
+    })
+>>>>>>> dcafaa2d4722f4775e93d011f093bdfe65d47249
     .then(data => {
       console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
     });
@@ -362,3 +374,25 @@ async function delete_data(url = '', data = {}) {
   })
   return response.json(); // JSON のレスポンスをネイティブの JavaScript オブジェクトに解釈
 }
+
+async function sha256(text) {
+  const uint8 = new TextEncoder().encode(text)
+  const digest = await crypto.subtle.digest('SHA-256', uint8)
+  return Array.from(new Uint8Array(digest)).map(v => v.toString(16).padStart(2, '0')).join('')
+}
+
+//光らせる
+
+window.addEventListener('load', function () {
+  for (let i = 0; i < 10; i++) {
+    var box = document.querySelector('#pika-box');
+    box.classList.add('highlight');
+
+
+    setTimeout(function () {
+      box.classList.remove('highlight');
+    }, 50);
+
+    console.log("hi")
+  }
+});
