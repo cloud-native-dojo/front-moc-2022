@@ -11,8 +11,11 @@ var all_ports = [document.getElementById("island1_port"),
 document.getElementById("island2_port"),
 document.getElementById("island3_port"),
 document.getElementById("island4_port")]
+var all_dock = [document.getElementById("island1_dock"),
+document.getElementById("island2_dock"),
+document.getElementById("island3_dock"),
+document.getElementById("island4_dock")]
 var ship_box = document.getElementById("ship_box").getBoundingClientRect();
-var delete_box = document.getElementsByClassName("delete_ship")[0].getBoundingClientRect();
 
 var ship_rect = [];
 
@@ -26,8 +29,20 @@ var onisland2 = 0;
 var onisland3 = 0;
 var onisland4 = 0;
 
+const cyrb53 = function (str, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+};
+
 (async function () {
-  let response = await fetch("http://127.0.0.1:8000/pods/");
+  let response = await fetch("http://10.204.227.162:8000/pods/");
 
   if (response.ok) {
     let pods = (await response.json()).pods;
@@ -43,14 +58,7 @@ var onisland4 = 0;
 
         bgcode = "#" + String(bgcode).slice(3, 9);
 
-        console.log(bgcode);
-	/*
-        let bgcode = (await sha256(pods[i]))
-
-        bgcode = "#" + bgcode.slice(0, 6);
-
-        console.log(bgcode)
-	*/
+        console.log("background color:", bgcode);
 
         // 指定した色からR/G/Bをそれぞれ取得
         const red = parseInt(bgcode.substr(1, 2), 16);
@@ -63,9 +71,14 @@ var onisland4 = 0;
         const luminance = brightness / 2.55
 
         // 基準値(50)より大きい場合は、黒を返し、それ以外は白を返す
-        let text_color =  luminance > 50 ? "#000000" : "#ffffff";
-        console.log(text_color);
-        ship.innerHTML = "<div style='background:" + bgcode + ";'><img src=\"https://cdn-icons-png.flaticon.com/512/870/870056.png\" width=\"80\" height=\"80\"><p style='color:" + text_color + ";font-weight: bold;'>" + pods[i] +"</p><div>";
+        let text_color = luminance > 50 ? "#000000" : "#ffffff";
+        console.log("text color:", text_color);
+        if (luminance > 50) {
+          ship.innerHTML = "<div style='background:" + bgcode + ";width:120px;height:140px;'><img src=\"https://cdn-icons-png.flaticon.com/512/870/870056.png\" width=\"100\" height=\"100\"><p style='color:" + text_color + ";font-weight: bold;margin-top: -25px;'>" + pods[i] + "</p><p style='color:" + text_color + ";font-weight: bold;margin-top: -25px;' id='loading_" + pods[i] + "'>loading</p><div>";
+        }
+        else {
+          ship.innerHTML = "<div style='background:" + bgcode + ";width:120px;height:140px;'><img src=\"https://cdn-icons-png.flaticon.com/512/870/870056.png\" width=\"100\" height=\"100\" style='filter: invert(100%);'><p style='color:" + text_color + ";font-weight: bold;margin-top: -25px;'>" + pods[i] + "</p><p style='color:" + text_color + ";font-weight: bold;margin-top: -25px;' id='loading_" + pods[i] + "'>loading</p><div>";
+        }
 
         ship_element.appendChild(ship);
       }
@@ -79,7 +92,7 @@ var onisland4 = 0;
 
   if (get_ports.ok) {
     let ports = (await get_ports.json()).sugessted_port;
-    console.log(ports);
+    console.log("fetched ports:", ports);
     for (var i = 0; i < all_ports.length; i++) {
       all_ports[i].innerText = "port:" + ports[i];
     }
@@ -91,15 +104,18 @@ var onisland4 = 0;
 
   if (get_save.ok) {
     let save_data = (await get_save.json()).data;
-    console.log(save_data);
+    console.log("save data:", save_data);
     for (let i = 0; i < island.length; i++) {
       island[i][0].style.visibility = save_data.island[i];
       all_ports[i].style.visibility = save_data.island[i];
+      all_dock[i].style.visibility = save_data.island[i];
     }
     for (let i = 0; i < elements.length; i++) {
       try {
-        elements[i].style.top = save_data.ship[elements[i].id].split(" ")[0] + "px";
-        elements[i].style.left = save_data.ship[elements[i].id].split(" ")[1] + "px";
+	const element_id = elements[i].id;
+        console.log("ship top position:", save_data.ship[element_id].split(" ")[0]);
+        elements[i].style.top = save_data.ship[element_id].split(" ")[0];
+        elements[i].style.left = save_data.ship[element_id].split(" ")[1];
       } catch (e) { }
       ship_rect[i] = elements[i].getBoundingClientRect();
     }
@@ -169,11 +185,11 @@ var onisland4 = 0;
 
   //マウスボタンが上がったら発火
   function mup(e) {
+    console.log("called: mup()");
+
     try {
       var drag = document.getElementsByClassName("drag")[0];
-    } catch (e) {
-
-    }
+    } catch (e) { }
 
     //ムーブベントハンドラの消去
     try {
@@ -197,8 +213,37 @@ var onisland4 = 0;
     } catch (e) { }
   }
 
-})()
+  async function check_status() {
+    console.log("called: check_status()");
 
+    let result = await fetch("http://10.204.227.162:8000/pods/status/");
+    if (result.ok) {
+      let status_data = (await result.json()).data;
+      for (let i = 0; i < status_data.length; i++) {
+	try {
+	  const ship_id = elements[i].id;
+	  const ship_status = status_data[i];
+          console.log("ship status:", ship_id, ship_status);
+        } catch (e) {
+          continue;
+	}
+
+        const target = document.getElementById("loading_" + ship_id)
+        if (ship_status == false) {
+          target.style.visibility = "visible";
+        } else {
+          target.style.visibility = "hidden";
+          console.log("ship ready:", ship_id);
+        }
+      }
+    } else {
+      alert("HTTP-Error: " + response.status);
+    }
+  }
+
+  setInterval(check_status, 3000);
+
+})()
 
 function check_island() {
   for (let j = 0; j < island_rect.length; j++) {
@@ -206,13 +251,12 @@ function check_island() {
     island[j][0].classList.remove("bind");
   }
 
-
   for (let j = 0; j < island_rect.length; j++) {
     for (let i = 0; i < elements.length; i++) {
-
-      console.log(delete_box.top);
-      console.log(delete_box.right);
-      if (detectCollision(ship_rect[i], delete_box)) {
+      var delete_box = document.getElementsByClassName("delete_ship")[0].getBoundingClientRect();
+      console.log("delete_box top:",delete_box.top, "left:", delete_box.left, "bottom:", delete_box.bottom, "right:",delete_box.right);
+      console.log("ship top:", ship_rect[i].top, "left:", ship_rect[i].left, "bottom:", ship_rect[i].bottom, "right:", ship_rect[i].right);
+      if (detectCollision(delete_box, ship_rect[i])) {
         console.log(elements[i].id);
         deleteShip(elements[i].id);
         elements[i].remove();
@@ -221,8 +265,22 @@ function check_island() {
         && detectCollision(island_rect[j], ship_rect[i])
         && island[j][0].classList.contains("bind") == false
         && window.getComputedStyle(island[j][0]).visibility == "visible") {
-        elements[i].style.top = island_rect[j].top + (island_rect[j].bottom - island_rect[j].top) / 4 + "px";
-        elements[i].style.left = island_rect[j].left + (island_rect[j].right - island_rect[j].left) / 4 + 20 + "px";
+        if (j == 0) {
+          elements[i].style.top = 160 + "px";
+          elements[i].style.left = 270 + "px";
+        }
+        if (j == 1) {
+          elements[i].style.top = 610 + "px";
+          elements[i].style.left = 550 + "px";
+        }
+        if (j == 2) {
+          elements[i].style.top = 610 + "px";
+          elements[i].style.left = 300 + "px";
+        }
+        if (j == 3) {
+          elements[i].style.top = 160 + "px";
+          elements[i].style.left = 600 + "px";
+        }
         island[j][0].style.backgroundColor = '#33FF00';
 
         post_data('http://10.204.227.162:8000/services/',
@@ -236,9 +294,9 @@ function check_island() {
             console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
           });
 
-        let link = document.getElementById('island' + (j + 1) + '_link');
+        let link = document.getElementById('island' + (j + 1) + '_linkbtn');
         console.log(link)
-        let url = 'http://10.204.227.162:' + all_ports[j].innerText;
+        let url = 'http://10.204.227.151:' + all_ports[j].innerText;
         link.setAttribute('href', url.replace(":port", ""));
         island[j][0].classList.add("bind");
         break;
@@ -280,7 +338,7 @@ function save() {
     save_message.island[i] = window.getComputedStyle(island[i][0]).visibility;
   }
   for (let i = 0; i < elements.length; i++) {
-    save_message.ship[elements[i].id] = ship_rect[i].top + " " + ship_rect[i].left;
+    save_message.ship[elements[i].id] = window.getComputedStyle(elements[i]).top + " " + window.getComputedStyle(elements[i]).left;
   }
   post_data('http://10.204.227.162:8000/save/', save_message
   )
@@ -319,12 +377,13 @@ function moveNewPage() {
 }
 
 function addIsland() {
-  console.log("add");
+  console.log("called: addIsland()");
   island[0][0].classList.toggle('active');
   for (var i = 0; i < island.length; i++) {
     if (window.getComputedStyle(island[i][0]).visibility == "hidden") {
       island[i][0].style.visibility = "visible";
       all_ports[i].style.visibility = "visible";
+      all_dock[i].style.visibility = "visible";
       save();
       break;
     }
@@ -332,11 +391,12 @@ function addIsland() {
 }
 
 function deleteIsland() {
-  console.log("delete");
+  console.log("called: deleteIsland()");
   for (var i = island.length - 1; i > -1; i--) {
     if (window.getComputedStyle(island[i][0]).visibility == "visible" && island[i][0].classList.contains("bind") == false) {
       island[i][0].style.visibility = "hidden";
       all_ports[i].style.visibility = "hidden";
+      all_dock[i].style.visibility = "hidden";
       save();
       break;
     }
@@ -344,6 +404,7 @@ function deleteIsland() {
 }
 
 function deleteShip(ShipName) {
+  console.log("called: deleteShip()");
   delete_data('http://10.204.227.162:8000/pods/',
     {
       "name": ShipName
@@ -391,25 +452,3 @@ async function delete_data(url = '', data = {}) {
   })
   return response.json(); // JSON のレスポンスをネイティブの JavaScript オブジェクトに解釈
 }
-
-async function sha256(text) {
-  const uint8 = new TextEncoder().encode(text)
-  const digest = await crypto.subtle.digest('SHA-256', uint8)
-  return Array.from(new Uint8Array(digest)).map(v => v.toString(16).padStart(2, '0')).join('')
-}
-
-//光らせる
-
-window.addEventListener('load', function () {
-  for (let i = 0; i < 10; i++) {
-    var box = document.querySelector('#pika-box');
-    box.classList.add('highlight');
-
-
-    setTimeout(function () {
-      box.classList.remove('highlight');
-    }, 50);
-
-    console.log(i)
-  }
-});

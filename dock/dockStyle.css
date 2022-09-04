@@ -26,6 +26,7 @@
   flex-wrap: wrap;
   width: 900px;
   height: 335px;
+  position: relative;
 }
 
 .next_btn {
@@ -38,6 +39,7 @@
 }
 
 .ship-base {
+  position: relative;
   margin: 0 auto;
   width: 800px;
   border-top: 200px solid #a9a9a9;
@@ -76,6 +78,30 @@
   padding: 10px;
 }
 
+.demo-box {
+  border: 3px dashed;
+  font-weight: normal;
+  text-align: center;
+  margin: 10px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  width: 200px;
+  height: 80px;
+  padding: 10px;
+  font-size: 40px;
+  color: #000;
+  opacity: 0.4;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  z-index: -1;
+}
+
+.input-shipname {
+  text-align: center;
+  font-size: 30px;
+}
+
 .container-box {
   font-size: 30px;
 }
@@ -105,16 +131,16 @@
 
 #animated {
 
-  animation: move-y .5s infinite alternate ease-in-out;
+  animation: move-y .8s infinite alternate ease-in-out;
   display: inline-block;
 }
 
 @keyframes move-y {
   from {
-    transform: translateY(0);
+    transform: translateY(-200px);
   }
 
   to {
-    transform: translateY(20px);
+    transform: translateY(0px);
   }
 }

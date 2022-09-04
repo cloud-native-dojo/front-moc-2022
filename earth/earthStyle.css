@@ -1,12 +1,15 @@
-.circle1 {}
 
-.circle2 {
+.circle1 {
   position: relative;
   width: 900px;
   height: 900px;
+  margin: auto;
+}
+
+.circle2 {
   border-radius: 50%;
   background-color: #6699FF;
-  margin: auto;
+  height: 900px;
 }
 
 .island1 {
@@ -59,44 +62,94 @@
 
 #island1_port {
   position: absolute;
-  top: 5%;
-  left: 8%;
-  padding-top: 30%;
+  width: 200px;
+  height: 50px;
+  top: 300px;
+  left: 80px;
   font-size: 16pt;
   font-weight: bold;
   visibility: hidden;
+  z-index: 3
 }
 
 #island2_port {
   position: absolute;
-  top: 55%;
-  left: 62%;
-  padding-top: 30%;
+  width: 200px;
+  height: 50px;
+  top: 750px;
+  left: 500px;
   font-size: 16pt;
   font-weight: bold;
   visibility: hidden;
+  z-index: 3
 }
 
 #island3_port {
   position: absolute;
-  top: 55%;
-  left: 8%;
-  padding-top: 30%;
-  padding-left: 18%;
+  width: 200px;
+  height: 50px;
+  top: 750px;
+  left: 230px;
   font-size: 16pt;
   font-weight: bold;
   visibility: hidden;
+  z-index: 3
 }
 
 #island4_port {
   position: absolute;
-  top: 5%;
-  left: 62%;
-  padding-top: 30%;
-  padding-left: 18%;
+  width: 200px;
+  height: 50px;
+  top: 300px;
+  left: 600px;
   font-size: 16pt;
   font-weight: bold;
   visibility: hidden;
+  z-index: 3
+}
+
+#island1_dock {
+  position: absolute;
+  width: 200px;
+  height: 50px;
+  top: 300px;
+  left: 80px;
+  background-color: gray;
+  visibility: hidden;
+  z-index: 2
+}
+
+#island2_dock {
+  position: absolute;
+  width: 200px;
+  height: 50px;
+  top: 750px;
+  left: 500px;
+  background-color: gray;
+  visibility: hidden;
+  z-index: 2
+}
+
+#island3_dock {
+  position: absolute;
+  width: 200px;
+  height: 50px;
+  top: 750px;
+  left: 230px;
+  background-color: gray;
+  visibility: hidden;
+  z-index: 2
+}
+
+#island4_dock {
+  position: absolute;
+  width: 200px;
+  height: 50px;
+  top: 300px;
+  left: 600px;
+  background-color: gray;
+  visibility: hidden;
+  z-index: 2
 }
 
 #ship_box {
@@ -106,14 +159,14 @@
   bottom: 0;
   left: 0;
   margin: auto;
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
 }
 
 .ship {
   cursor: move;
   position: absolute;
-  z-index: 1000;
+  z-index: 1;
   top: 32%;
   left: 46%;
   width: 170px;
@@ -154,7 +207,7 @@
   left: 0;
   margin: 5px;
   border: 5px solid black;
-  animation: blinkEffect 1s ease infinite;
+  animation: blinkEffect 2s ease infinite;
 }
 
 @keyframes blinkEffect {
@@ -162,8 +215,12 @@
     opacity: 0;
   }
 
-  100% {
+  50% {
     opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
   }
 }
 
@@ -179,6 +236,8 @@
   position: fixed;
   bottom: 20%;
   left: 0;
+  width: 400px;
+  height: 300px;
   background-color: red;
 }
 

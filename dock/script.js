@@ -1,24 +1,11 @@
-  let dragged = null;
+let dragged = null;
 
 var btn = document.getElementById("btn");
+var shipname = document.getElementById("name")
 
 var ShipNum;
 var IslandNum;
 
-//光らせる
-window.addEventListener('load', function () {
-  for (let i = 0; i < 10; i++) {
-    var box = document.querySelector('#pika-box');
-    box.classList.add('highlight');
-
-
-    setTimeout(function () {
-      box.classList.remove('highlight');
-    }, 50);
-
-    console.log("hi")
-  }
-});
 
 btn.addEventListener('click', function () {
   window.location.href = 'http://10.204.227.162/earth/earth.html';
@@ -42,11 +29,17 @@ function onDrop(event) {
     console.log("1");
     const clone = dragged.cloneNode(true);
     event.target.appendChild(clone);
+    deleteKaraBox();
   }
   else if (event.target.className === "example-origin") {
     console.log("2");
     dragged.parentNode.removeChild(dragged);
   }
+}
+
+function deleteKaraBox() {
+  var x = document.getElementById("kara-box");
+  x.parentNode.removeChild(x);
 }
 
 //urlのパラメーター取得
@@ -73,12 +66,19 @@ function onDragEnd(event) {
 }
 
 async function moveNewPage() {
+  if (shipname.value == "") {
+    Shipname = 'ship-' + Math.floor(Math.random() * (99999 - 10000) + 10000);
+  }
+  else {
+    Shipname = shipname.value;
+  }
   var url = "http://10.204.227.162/earth/earth.html"
   makepod('http://10.204.227.162:8000/pods/',
     {
       "containers": {
         "wordpress": 1
-      }
+      },
+      "name": Shipname
     })
     .then(data => {
       console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
