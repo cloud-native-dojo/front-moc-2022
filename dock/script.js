@@ -66,6 +66,7 @@ function onDragEnd(event) {
 }
 
 async function moveNewPage() {
+  loading()
   if (shipname.value == "") {
     Shipname = 'ship-' + Math.floor(Math.random() * (99999 - 10000) + 10000);
   }
@@ -117,4 +118,9 @@ async function makepod(url = '', data = {}) {
     body: JSON.stringify(data) // 本文のデータ型は "Content-Type" ヘッダーと一致させる必要があります
   })
   return response.json(); // JSON のレスポンスをネイティブの JavaScript オブジェクトに解釈
+}
+
+//loading画面
+function loading() {
+  document.getElementById("load").style.display = "flex";
 }
